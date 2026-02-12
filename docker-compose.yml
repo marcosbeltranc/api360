@@ -10,6 +10,8 @@ services:
       - DB_HOST=db
     depends_on:
       - db
+    networks:
+      - shared_net # Solo el nombre aquí
     command: php artisan serve --host=0.0.0.0 --port=8000
 
   db:
@@ -24,6 +26,14 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - shared_net # Solo el nombre aquí
+
+# SECCIÓN GLOBAL DE REDES (Aquí es donde se define la configuración)
+networks:
+  shared_net:
+    external: true
+    name: 360_shared_network
 
 volumes:
   postgres_data:

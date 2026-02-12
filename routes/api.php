@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OptionListController;
+use App\Http\Controllers\InfrastructureDeviceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,4 +30,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+
+    Route::get('/options', [OptionListController::class, 'get']);      // Consultar
+    Route::post('/options', [OptionListController::class, 'create']);   // Crear
+    Route::put('/options/{id}', [OptionListController::class, 'update']); // Editar
+    Route::delete('/options/{id}', [OptionListController::class, 'delete']); // Eliminar
+
+    Route::get('/infrastructure', [InfrastructureDeviceController::class, 'get']);
+    Route::post('/infrastructure', [InfrastructureDeviceController::class, 'create']);
+    Route::put('/infrastructure/{id}', [InfrastructureDeviceController::class, 'update']);
+    Route::delete('/infrastructure/{id}', [InfrastructureDeviceController::class, 'delete']);
 });
