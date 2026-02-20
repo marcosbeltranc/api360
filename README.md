@@ -64,3 +64,56 @@ Entrar al contenedor de la app:
 ```bash
 docker compose exec app bash
 ```
+
+
+
+
+
+
+
+
+
+1. Crear Migraciones
+Estos comandos solo crean el archivo en database/migrations.
+Tabla nueva:
+docker compose exec app php artisan make:migration create_devices_table
+
+Modificar tabla existente (Añadir columnas):
+docker compose exec app php artisan make:migration add_status_to_devices_table --table=devices
+
+2. Ejecutar Migraciones (Subir)
+Correr todo lo pendiente:
+docker compose exec app php artisan migrate
+
+Ver el estado (Qué se ha corrido y qué no):
+docker compose exec app php artisan migrate:status
+
+3. Revertir Migraciones (Bajar/Rollback)
+Deshacer el último lote (Batch):
+docker compose exec app php artisan migrate:rollback
+
+Deshacer un número específico de migraciones:
+docker compose exec app php artisan migrate:rollback --step=2
+
+Reset total (Ejecuta down() de TODAS las migraciones):
+docker compose exec app php artisan migrate:reset
+
+4. Comandos de "Refresco" (Limpieza)
+Borrar todo y volver a correr todo:
+docker compose exec app php artisan migrate:refresh
+
+Borrar todo, volver a correr y ejecutar los Seeders (Recomendado):
+docker compose exec app php artisan migrate:fresh --seed
+
+Diferencia: refresh corre los metodos down(), fresh simplemente hace un DROP ALL TABLES (es más rápido y evita errores de claves foráneas).
+
+
+
+docker compose exec app php artisan make:model ServerDevice
+docker compose exec app php artisan make:model NetworkDevice
+docker compose exec app php artisan make:model NasDevice
+
+
+docker compose exec app php artisan make:controller ServerDeviceController --api
+docker compose exec app php artisan make:controller NetworkDeviceController --api
+docker compose exec app php artisan make:controller NasDeviceController --api

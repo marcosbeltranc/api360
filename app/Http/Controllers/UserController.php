@@ -55,6 +55,21 @@ class UserController extends Controller
     }
 
     /**
+     * Listar responsables
+     * * Retorna todos los usuarios que no han sido borrados lógicamente.
+     * @authenticated
+     */
+    public function getResponsibles()
+    {
+        $users = User::whereIn('level', [0, 1])
+                     ->whereNull('deleted_at')
+                     ->select('id', 'name', 'email')
+                 ->get();
+
+        return response()->json($users, 200);
+    }
+
+    /**
      * Ver detalle de usuario
      * * @urlParam id int required ID del usuario. Example: 1
      * @authenticated
