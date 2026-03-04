@@ -27,6 +27,12 @@ class NasDeviceController extends Controller
         ]);
     }
 
+    public function getById(Request $request, $id)
+    {
+        $device = NasDevice::with(['status', 'deviceType', 'location', 'responsible'])->findOrFail($id);
+        return response()->json($device);
+    }
+
     public function create(Request $request)
     {
         if ($request->user()->level > 1) {

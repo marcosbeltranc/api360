@@ -29,6 +29,8 @@ return new class extends Migration
             
             // Red
             $table->ipAddress('ip_address')->nullable();
+            $table->string('web_access')->nullable();
+            $table->string('ssh_access')->nullable();
 
             // Especificaciones de Hardware
             $table->string('storage')->nullable();
@@ -38,8 +40,8 @@ return new class extends Migration
             $table->date('last_maintenance')->nullable();
             $table->timestamp('last_update')->nullable();
 
-            $table->softDeletes();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -39,7 +39,8 @@ class OptionListController extends Controller
             'type'       => 'required|string|max:100',
             'slug'       => 'required|string|unique:option_lists,slug',
             'color'      => 'nullable|string',
-            'sort_order' => 'integer'
+            'sort_order' => 'integer',
+            'option_group_id' => 'integer'
         ]);
 
         $option = OptionList::create($validated);
@@ -63,7 +64,8 @@ class OptionListController extends Controller
             'name'       => 'sometimes|string',
             'is_active'  => 'boolean',
             'color'      => 'nullable|string',
-            'sort_order' => 'integer'
+            'sort_order' => 'integer',
+            'option_group_id' => 'integer'
         ]);
 
         $option->update($validated);

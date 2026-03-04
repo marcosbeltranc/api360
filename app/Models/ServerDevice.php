@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ServerDevice extends Model
 {
@@ -31,4 +32,12 @@ class ServerDevice extends Model
     public function location(): BelongsTo { return $this->belongsTo(OptionList::class, 'location_id'); }
     public function responsible(): BelongsTo { return $this->belongsTo(User::class, 'responsible_id'); }
     public function serverType(): BelongsTo { return $this->belongsTo(OptionList::class, 'server_type_id'); }
+    public function serverAccess(): HasMany 
+    { 
+        return $this->hasMany(ServerAccess::class, 'server_device_id'); 
+    }
+    public function serverUsers(): HasMany 
+    { 
+        return $this->hasMany(ServerUsers::class, 'server_device_id'); 
+    }
 }

@@ -48,8 +48,8 @@ return new class extends Migration
             $table->date('last_maintenance')->nullable();
             $table->timestamp('last_update')->nullable();
 
-            $table->softDeletes();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

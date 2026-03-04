@@ -110,10 +110,14 @@ Diferencia: refresh corre los metodos down(), fresh simplemente hace un DROP ALL
 
 
 docker compose exec app php artisan make:model ServerDevice
-docker compose exec app php artisan make:model NetworkDevice
-docker compose exec app php artisan make:model NasDevice
-
 
 docker compose exec app php artisan make:controller ServerDeviceController --api
-docker compose exec app php artisan make:controller NetworkDeviceController --api
-docker compose exec app php artisan make:controller NasDeviceController --api
+
+
+
+
+
+
+wsl -d Ubuntu
+
+sudo chown -R $USER:$USER .

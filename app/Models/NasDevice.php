@@ -15,7 +15,7 @@ class NasDevice extends Model
     protected $fillable = [
         'name', 'status_id', 'device_type_id', 'location_id', 'responsible_id',
         'sku', 'model', 'brand', 'serial_number', 'notes',
-        'ip_address', 'storage', 'raid_controller',
+        'ip_address', 'web_access', 'ssh_access', 'storage', 'raid_controller',
         'last_maintenance', 'last_update'
     ];
 

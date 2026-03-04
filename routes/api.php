@@ -8,6 +8,10 @@ use App\Http\Controllers\OptionListController;
 use App\Http\Controllers\ServerDeviceController;
 use App\Http\Controllers\NasDeviceController;
 use App\Http\Controllers\NetworkDeviceController;
+use App\Http\Controllers\ServerAccessController;
+use App\Http\Controllers\ServerUsersController;
+use App\Http\Controllers\OptionGroupController;
+use App\Http\Controllers\SystemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +37,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/options/{id}', [OptionListController::class, 'update']);
     Route::delete('/options/{id}', [OptionListController::class, 'delete']);
 
+    Route::get('/option_groups', [OptionGroupController::class, 'get']);
+    Route::post('/option_groups', [OptionGroupController::class, 'create']);
+    Route::put('/option_groups/{id}', [OptionGroupController::class, 'update']);
+    Route::delete('/option_groups/{id}', [OptionGroupController::class, 'delete']);
+
     Route::get('/server-devices', [ServerDeviceController::class, 'get']);
     Route::get('/server-devices/{id}', [ServerDeviceController::class, 'getById']);
     Route::post('/server-devices', [ServerDeviceController::class, 'create']);
@@ -40,6 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/server-devices/{id}', [ServerDeviceController::class, 'delete']);
     
     Route::get('/nas-devices', [NasDeviceController::class, 'get']);
+    Route::get('/nas-devices/{id}', [NasDeviceController::class, 'getById']);
     Route::post('/nas-devices', [NasDeviceController::class, 'create']);
     Route::put('/nas-devices/{id}', [NasDeviceController::class, 'update']);
     Route::delete('/nas-devices/{id}', [NasDeviceController::class, 'delete']);
@@ -48,6 +58,22 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/network-devices', [NetworkDeviceController::class, 'create']);
     Route::put('/network-devices/{id}', [NetworkDeviceController::class, 'update']);
     Route::delete('/network-devices/{id}', [NetworkDeviceController::class, 'delete']);
+
+    Route::get('/server-access', [ServerAccessController::class, 'get']);
+    Route::post('/server-access', [ServerAccessController::class, 'create']);
+    Route::put('/server-access/{id}', [ServerAccessController::class, 'update']);
+    Route::delete('/server-access/{id}', [ServerAccessController::class, 'delete']);
+    
+    Route::get('/systems', [SystemController::class, 'get']);
+    Route::get('/systems/{id}', [SystemController::class, 'getById']);
+    Route::post('/systems', [SystemController::class, 'create']);
+    Route::put('/systems/{id}', [SystemController::class, 'update']);
+    Route::delete('/systems/{id}', [SystemController::class, 'delete']);
+
+    // Route::get('/server-users', [ServerUsersController::class, 'get']);
+    // Route::post('/server-users', [ServerUsersController::class, 'create']);
+    // Route::put('/server-users/{id}', [ServerUsersController::class, 'update']);
+    // Route::delete('/server-users/{id}', [ServerUsersController::class, 'delete']);
 
     // Route::get('/infrastructure', [InfrastructureDeviceController::class, 'get']);
     // Route::post('/infrastructure', [InfrastructureDeviceController::class, 'create']);

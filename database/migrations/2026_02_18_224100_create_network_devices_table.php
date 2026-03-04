@@ -34,8 +34,8 @@ $table->id();
             $table->date('last_maintenance')->nullable();
             $table->timestamp('last_update')->nullable();
 
-            $table->softDeletes();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
