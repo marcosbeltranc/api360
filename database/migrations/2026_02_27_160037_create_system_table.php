@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->foreignId('status_id')->constrained('option_lists');
             $table->foreignId('priority_id')->constrained('option_lists');
-            $table->foreignId('area_id')->constrained('option_lists');
+            $table->foreignId('area_id')->nullable()->constrained('option_lists');
             $table->foreignId('responsible_id')->nullable()->constrained('users');
             $table->string('api_doc_url')->nullable(); 
             $table->string('db_engine')->nullable();
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->integer('db_port')->nullable();
             $table->string('repository_url')->nullable();
             $table->timestamp('last_update')->nullable();
-            $table->text('technical_notes')->nullable();
+            $table->json('technical_notes')->nullable();
             $table->string('url')->nullable();
             $table->timestamps();
             $table->softDeletes();

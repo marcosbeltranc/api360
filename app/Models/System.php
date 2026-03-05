@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class System extends Model
 {
@@ -19,6 +20,7 @@ class System extends Model
     ];
 
     protected $casts = [
+        'technical_notes' => 'array',
         'last_update' => 'datetime:Y-m-d',
         'created_at'  => 'datetime:Y-m-d H:i:s',
     ];
@@ -28,4 +30,5 @@ class System extends Model
     public function priority(): BelongsTo { return $this->belongsTo(OptionList::class, 'priority_id'); }
     public function area(): BelongsTo { return $this->belongsTo(OptionList::class, 'area_id'); }
     public function responsible(): BelongsTo { return $this->belongsTo(User::class, 'responsible_id'); }
+    public function areas() { return $this->belongsToMany( OptionList::class, 'system_area', 'system_id', 'area_id')->where('type', 'departments'); }
 }
