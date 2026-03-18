@@ -18,7 +18,7 @@ class ServerDevice extends Model
         'sku', 'model', 'brand', 'serial_number', 'notes',
         'ip_address', 'secondary_ip', 'mac_address', 'network_card',
         'processor', 'ram', 'storage', 'gpu', 'raid_controller', 'power_supply',
-        'os', 'last_maintenance', 'last_update'
+        'os', 'last_maintenance', 'last_update', 'maintenance_notes'
     ];
 
     protected $casts = [
@@ -39,5 +39,12 @@ class ServerDevice extends Model
     public function serverUsers(): HasMany 
     { 
         return $this->hasMany(ServerUsers::class, 'server_device_id'); 
+    }
+    public function system(): HasMany
+    {
+        return $this->hasMany(System::class, 'server_device_id')
+        ->with([
+            'status',
+        ]);
     }
 }

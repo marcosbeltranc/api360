@@ -12,6 +12,7 @@ use App\Http\Controllers\ServerAccessController;
 use App\Http\Controllers\ServerUsersController;
 use App\Http\Controllers\OptionGroupController;
 use App\Http\Controllers\SystemController;
+use App\Http\Controllers\DeviceMaintenanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,10 +71,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/systems/{id}', [SystemController::class, 'update']);
     Route::delete('/systems/{id}', [SystemController::class, 'delete']);
 
-    // Route::get('/server-users', [ServerUsersController::class, 'get']);
-    // Route::post('/server-users', [ServerUsersController::class, 'create']);
-    // Route::put('/server-users/{id}', [ServerUsersController::class, 'update']);
-    // Route::delete('/server-users/{id}', [ServerUsersController::class, 'delete']);
+    Route::get('/server-users', [ServerUsersController::class, 'get']);
+    Route::post('/server-users', [ServerUsersController::class, 'create']);
+    Route::put('/server-users/{id}', [ServerUsersController::class, 'update']);
+    Route::delete('/server-users/{id}', [ServerUsersController::class, 'delete']);
+
+    Route::get('/device-maintenances', [DeviceMaintenanceController::class, 'get']);
+    Route::post('/device-maintenances', [DeviceMaintenanceController::class, 'create']);
+    Route::put('/device-maintenances/{id}', [DeviceMaintenanceController::class, 'update']);
+    Route::delete('/device-maintenances/{id}', [DeviceMaintenanceController::class, 'delete']);
 
     // Route::get('/infrastructure', [InfrastructureDeviceController::class, 'get']);
     // Route::post('/infrastructure', [InfrastructureDeviceController::class, 'create']);

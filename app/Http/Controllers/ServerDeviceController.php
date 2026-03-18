@@ -10,7 +10,7 @@ class ServerDeviceController extends Controller
 {
     public function get(Request $request)
     {
-        $query = ServerDevice::with(['status', 'deviceType', 'location', 'responsible', 'serverType', 'serverAccess', 'serverUsers']);
+        $query = ServerDevice::with(['status', 'deviceType', 'location', 'responsible', 'serverType', 'serverAccess', 'serverUsers', 'system']);
 
         // Filtro opcional por tipo o búsqueda general
         if ($request->filled('search')) {
@@ -31,7 +31,7 @@ class ServerDeviceController extends Controller
 
     public function getById(Request $request, $id)
     {
-        $device = ServerDevice::with(['status', 'deviceType', 'location', 'responsible', 'serverType', 'serverAccess', 'serverUsers'])->findOrFail($id);
+        $device = ServerDevice::with(['status', 'deviceType', 'location', 'responsible', 'serverType', 'serverAccess', 'serverUsers', 'system'])->findOrFail($id);
         return response()->json($device);
     }
 
@@ -52,7 +52,7 @@ class ServerDeviceController extends Controller
 
         $server = ServerDevice::create($request->all());
 
-        return response()->json($server->load(['status', 'deviceType', 'location', 'responsible', 'serverType', 'serverAccess', 'serverUsers']), 201);
+        return response()->json($server->load(['status', 'deviceType', 'location', 'responsible', 'serverType', 'serverAccess', 'serverUsers', 'system']), 201);
     }
 
     public function update(Request $request, $id)
@@ -64,7 +64,7 @@ class ServerDeviceController extends Controller
         $server = ServerDevice::findOrFail($id);
         $server->update($request->all());
 
-        return response()->json($server->load(['status', 'deviceType', 'location', 'responsible', 'serverType', 'serverAccess', 'serverUsers']));
+        return response()->json($server->load(['status', 'deviceType', 'location', 'responsible', 'serverType', 'serverAccess', 'serverUsers', 'system']));
     }
 
     public function delete(Request $request, $id)

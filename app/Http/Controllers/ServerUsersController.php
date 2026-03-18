@@ -11,8 +11,8 @@ class ServerUsersController extends Controller
     {
         $query = ServerUsers::with(['server']);
 
-        if ($request->filled('server_id')) {
-            $query->where('server_id', $request->server_id);
+        if ($request->filled('server_device_id')) {
+            $query->where('server_device_id', $request->server_device_id);
         }
 
         if ($request->filled('search')) {
