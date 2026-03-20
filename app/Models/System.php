@@ -31,4 +31,6 @@ class System extends Model
     public function area(): BelongsTo { return $this->belongsTo(OptionList::class, 'area_id'); }
     public function responsible(): BelongsTo { return $this->belongsTo(User::class, 'responsible_id'); }
     public function areas() { return $this->belongsToMany( OptionList::class, 'system_area', 'system_id', 'area_id')->where('type', 'departments'); }
+    public function faqs() { return $this->hasMany(SystemFaq::class)->orderBy('order'); }
+    public function files() { return $this->hasMany(SystemFile::class); }
 }

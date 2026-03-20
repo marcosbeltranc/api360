@@ -8,11 +8,51 @@ services:
       - .:/var/www
     environment:
       - DB_HOST=db
+      - REDIS_HOST=redis
     depends_on:
       - db
+      - redis
     networks:
-      - shared_net # Solo el nombre aquí
+      - shared_net
     command: php artisan serve --host=0.0.0.0 --port=8000
+
+  reverb:
+    build: .
+    container_name: api360_reverb
+    command: php artisan reverb:start --host=0.0.0.0 --port=8088
+    ports:
+      - "8088:8088"
+    volumes:
+      - .:/var/www
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - app
+      - redis
+    networks:
+      - shared_net
+
+  worker:
+    build: .
+    container_name: api360_worker
+    command: php artisan queue:work
+    volumes:
+      - .:/var/www
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - app
+      - redis
+    networks:
+      - shared_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: api360_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - shared_net
 
   db:
     image: postgres:16-alpine
@@ -27,9 +67,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - shared_net # Solo el nombre aquí
+      - shared_net
 
-# SECCIÓN GLOBAL DE REDES (Aquí es donde se define la configuración)
 networks:
   shared_net:
     external: true

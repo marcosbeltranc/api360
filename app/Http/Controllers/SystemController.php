@@ -16,7 +16,9 @@ class SystemController extends Controller
             'priority',
             'area', 
             'areas',
-            'responsible'
+            'responsible',
+            'faqs',
+            'files'
         ])
         ->orderBy('id', 'desc')
         ->get();
@@ -35,7 +37,9 @@ class SystemController extends Controller
             'priority',
             'area',
             'areas',
-            'responsible'
+            'responsible',
+            'faqs',
+            'files'
         ])->findOrFail($id);
 
         return response()->json($system);
@@ -49,10 +53,16 @@ class SystemController extends Controller
             'server_device_id' => 'required|integer',
         ]);
 
-        $system = System::create($request->except('areas'));
+        $system = System::create($request->except('areas', 'faqs', 'files'));
 
         if ($request->has('areas')) {
             $system->areas()->sync($request->areas);
+        }
+
+        if ($request->has('faqs')) {
+            foreach ($request->faqs as $faq) {
+                $system->faqs()->create($faq);
+            }
         }
 
         return response()->json([
@@ -63,7 +73,9 @@ class SystemController extends Controller
                 'priority',
                 'area',
                 'areas',
-                'responsible'
+                'responsible',
+                'faqs',
+                'files'
             ])
         ]);
     }
@@ -73,13 +85,38 @@ class SystemController extends Controller
     {
         $system = System::findOrFail($id);
 
-        $data = $request->except('areas');
+        $data = $request->except('areas', 'faqs', 'files');
         $data['last_update'] = Carbon::now();
 
         $system->update($data);
 
         if ($request->has('areas')) {
             $system->areas()->sync($request->areas);
+        }
+
+        if ($request->has('faqs')) {
+            $existingIds = $system->faqs()->pluck('id')->toArray();
+            $incomingIds = collect($request->faqs)
+                ->pluck('id')
+                ->filter()
+                ->toArray();
+            $toDelete = array_diff($existingIds, $incomingIds);
+            if (!empty($toDelete)) {
+                $system->faqs()->whereIn('id', $toDelete)->delete();
+            }
+            foreach ($request->faqs as $faqData) {
+                if (isset($faqData['id'])) {
+                    $system->faqs()
+                        ->where('id', $faqData['id'])
+                        ->update([
+                            'question' => $faqData['question'],
+                            'answer'   => $faqData['answer'],
+                            'tags'     => $faqData['tags'] ?? [],
+                        ]);
+                } else {
+                    $system->faqs()->create($faqData);
+                }
+            }
         }
 
         return response()->json([
@@ -90,7 +127,9 @@ class SystemController extends Controller
                 'priority',
                 'area',
                 'areas',
-                'responsible'
+                'responsible',
+                'faqs',
+                'files'
             ])
         ]);
     }

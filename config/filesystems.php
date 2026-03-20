@@ -60,6 +60,12 @@ return [
             'report' => false,
         ],
 
+        'system_files' => [
+            'driver' => 'local',
+            'root' => storage_path('app/system_files'),
+            'url' => env('APP_URL') . '/storage/system_files',
+            'visibility' => 'public',
+        ],
     ],
 
     /*

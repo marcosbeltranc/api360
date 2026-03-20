@@ -2,16 +2,22 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OptionListController;
+use App\Http\Controllers\OptionGroupController;
+
 use App\Http\Controllers\ServerDeviceController;
 use App\Http\Controllers\NasDeviceController;
 use App\Http\Controllers\NetworkDeviceController;
 use App\Http\Controllers\ServerAccessController;
 use App\Http\Controllers\ServerUsersController;
-use App\Http\Controllers\OptionGroupController;
+
 use App\Http\Controllers\SystemController;
+use App\Http\Controllers\SystemFaqController;
+use App\Http\Controllers\SystemFileController;
+
 use App\Http\Controllers\DeviceMaintenanceController;
 
 /*
@@ -20,69 +26,136 @@ use App\Http\Controllers\DeviceMaintenanceController;
 |--------------------------------------------------------------------------
 */
 
+// Public
 Route::post('/login', [AuthController::class, 'login']);
 
-
 Route::middleware('auth:sanctum')->group(function () {
-    
-    Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::get('/users/responsibles', [UserController::class, 'getResponsibles']);
-    Route::apiResource('users', UserController::class);
-    Route::get('/user', function (Request $request) {
-        return $request->user();
+    // Auth
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', fn (Request $request) => $request->user());
+
+    /*
+    |--------------------------------------------------------------------------
+    | Users
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('users')->group(function () {
+        Route::get('/responsibles', [UserController::class, 'getResponsibles']);
+        Route::apiResource('/', UserController::class);
     });
 
-    Route::get('/options', [OptionListController::class, 'get']);
-    Route::post('/options', [OptionListController::class, 'create']);
-    Route::put('/options/{id}', [OptionListController::class, 'update']);
-    Route::delete('/options/{id}', [OptionListController::class, 'delete']);
+    /*
+    |--------------------------------------------------------------------------
+    | Options
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('options')->group(function () {
+        Route::get('/', [OptionListController::class, 'get']);
+        Route::post('/', [OptionListController::class, 'create']);
+        Route::put('/{id}', [OptionListController::class, 'update']);
+        Route::delete('/{id}', [OptionListController::class, 'delete']);
+    });
 
-    Route::get('/option_groups', [OptionGroupController::class, 'get']);
-    Route::post('/option_groups', [OptionGroupController::class, 'create']);
-    Route::put('/option_groups/{id}', [OptionGroupController::class, 'update']);
-    Route::delete('/option_groups/{id}', [OptionGroupController::class, 'delete']);
+    Route::prefix('option-groups')->group(function () {
+        Route::get('/', [OptionGroupController::class, 'get']);
+        Route::post('/', [OptionGroupController::class, 'create']);
+        Route::put('/{id}', [OptionGroupController::class, 'update']);
+        Route::delete('/{id}', [OptionGroupController::class, 'delete']);
+    });
 
-    Route::get('/server-devices', [ServerDeviceController::class, 'get']);
-    Route::get('/server-devices/{id}', [ServerDeviceController::class, 'getById']);
-    Route::post('/server-devices', [ServerDeviceController::class, 'create']);
-    Route::put('/server-devices/{id}', [ServerDeviceController::class, 'update']);
-    Route::delete('/server-devices/{id}', [ServerDeviceController::class, 'delete']);
-    
-    Route::get('/nas-devices', [NasDeviceController::class, 'get']);
-    Route::get('/nas-devices/{id}', [NasDeviceController::class, 'getById']);
-    Route::post('/nas-devices', [NasDeviceController::class, 'create']);
-    Route::put('/nas-devices/{id}', [NasDeviceController::class, 'update']);
-    Route::delete('/nas-devices/{id}', [NasDeviceController::class, 'delete']);
+    /*
+    |--------------------------------------------------------------------------
+    | Devices
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('server-devices')->group(function () {
+        Route::get('/', [ServerDeviceController::class, 'get']);
+        Route::get('/{id}', [ServerDeviceController::class, 'getById']);
+        Route::post('/', [ServerDeviceController::class, 'create']);
+        Route::put('/{id}', [ServerDeviceController::class, 'update']);
+        Route::delete('/{id}', [ServerDeviceController::class, 'delete']);
+    });
 
-    Route::get('/network-devices', [NetworkDeviceController::class, 'get']);
-    Route::post('/network-devices', [NetworkDeviceController::class, 'create']);
-    Route::put('/network-devices/{id}', [NetworkDeviceController::class, 'update']);
-    Route::delete('/network-devices/{id}', [NetworkDeviceController::class, 'delete']);
+    Route::prefix('nas-devices')->group(function () {
+        Route::get('/', [NasDeviceController::class, 'get']);
+        Route::get('/{id}', [NasDeviceController::class, 'getById']);
+        Route::post('/', [NasDeviceController::class, 'create']);
+        Route::put('/{id}', [NasDeviceController::class, 'update']);
+        Route::delete('/{id}', [NasDeviceController::class, 'delete']);
+    });
 
-    Route::get('/server-access', [ServerAccessController::class, 'get']);
-    Route::post('/server-access', [ServerAccessController::class, 'create']);
-    Route::put('/server-access/{id}', [ServerAccessController::class, 'update']);
-    Route::delete('/server-access/{id}', [ServerAccessController::class, 'delete']);
-    
-    Route::get('/systems', [SystemController::class, 'get']);
-    Route::get('/systems/{id}', [SystemController::class, 'getById']);
-    Route::post('/systems', [SystemController::class, 'create']);
-    Route::put('/systems/{id}', [SystemController::class, 'update']);
-    Route::delete('/systems/{id}', [SystemController::class, 'delete']);
+    Route::prefix('network-devices')->group(function () {
+        Route::get('/', [NetworkDeviceController::class, 'get']);
+        Route::post('/', [NetworkDeviceController::class, 'create']);
+        Route::put('/{id}', [NetworkDeviceController::class, 'update']);
+        Route::delete('/{id}', [NetworkDeviceController::class, 'delete']);
+    });
 
-    Route::get('/server-users', [ServerUsersController::class, 'get']);
-    Route::post('/server-users', [ServerUsersController::class, 'create']);
-    Route::put('/server-users/{id}', [ServerUsersController::class, 'update']);
-    Route::delete('/server-users/{id}', [ServerUsersController::class, 'delete']);
+    /*
+    |--------------------------------------------------------------------------
+    | Access & Users (Servers)
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('server-access')->group(function () {
+        Route::get('/', [ServerAccessController::class, 'get']);
+        Route::post('/', [ServerAccessController::class, 'create']);
+        Route::put('/{id}', [ServerAccessController::class, 'update']);
+        Route::delete('/{id}', [ServerAccessController::class, 'delete']);
+    });
 
-    Route::get('/device-maintenances', [DeviceMaintenanceController::class, 'get']);
-    Route::post('/device-maintenances', [DeviceMaintenanceController::class, 'create']);
-    Route::put('/device-maintenances/{id}', [DeviceMaintenanceController::class, 'update']);
-    Route::delete('/device-maintenances/{id}', [DeviceMaintenanceController::class, 'delete']);
+    Route::prefix('server-users')->group(function () {
+        Route::get('/', [ServerUsersController::class, 'get']);
+        Route::post('/', [ServerUsersController::class, 'create']);
+        Route::put('/{id}', [ServerUsersController::class, 'update']);
+        Route::delete('/{id}', [ServerUsersController::class, 'delete']);
+    });
 
-    // Route::get('/infrastructure', [InfrastructureDeviceController::class, 'get']);
-    // Route::post('/infrastructure', [InfrastructureDeviceController::class, 'create']);
-    // Route::put('/infrastructure/{id}', [InfrastructureDeviceController::class, 'update']);
-    // Route::delete('/infrastructure/{id}', [InfrastructureDeviceController::class, 'delete']);
+    /*
+    |--------------------------------------------------------------------------
+    | Systems
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('systems')->group(function () {
+        Route::get('/', [SystemController::class, 'get']);
+        Route::get('/{id}', [SystemController::class, 'getById']);
+        Route::post('/', [SystemController::class, 'create']);
+        Route::put('/{id}', [SystemController::class, 'update']);
+        Route::delete('/{id}', [SystemController::class, 'delete']);
+    });
+
+    Route::prefix('files')->group(function () {
+        Route::get('/', [SystemFileController::class, 'get']);
+        Route::post('/', [SystemFileController::class, 'upload']);
+        Route::get('/{id}/download', [SystemFileController::class, 'download']);
+        Route::get('/{id}/preview', [SystemFileController::class, 'preview']);
+        Route::put('/{id}', [SystemFileController::class, 'update']);
+        Route::delete('/{id}', [SystemFileController::class, 'delete']);
+    });
+    /*
+    |--------------------------------------------------------------------------
+    | FAQs (Knowledge Base)
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('faqs')->group(function () {
+        Route::get('/', [SystemFaqController::class, 'get']);
+        Route::get('/grouped', [SystemFaqController::class, 'grouped']);
+        Route::get('/{id}', [SystemFaqController::class, 'getById']);
+        Route::post('/', [SystemFaqController::class, 'create']);
+        Route::put('/{id}', [SystemFaqController::class, 'update']);
+        Route::delete('/{id}', [SystemFaqController::class, 'delete']);
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Maintenance
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('device-maintenances')->group(function () {
+        Route::get('/', [DeviceMaintenanceController::class, 'get']);
+        Route::post('/', [DeviceMaintenanceController::class, 'create']);
+        Route::put('/{id}', [DeviceMaintenanceController::class, 'update']);
+        Route::delete('/{id}', [DeviceMaintenanceController::class, 'delete']);
+    });
+
 });
