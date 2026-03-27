@@ -13,6 +13,9 @@ use App\Http\Controllers\NasDeviceController;
 use App\Http\Controllers\NetworkDeviceController;
 use App\Http\Controllers\ServerAccessController;
 use App\Http\Controllers\ServerUsersController;
+use App\Models\ServerMetric;
+use App\Events\ServerMetricsUpdated;
+use App\Http\Controllers\ServerAccessRequestController;
 
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\SystemFaqController;
@@ -29,6 +32,77 @@ use App\Http\Controllers\DeviceMaintenanceController;
 // Public
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::post('/metrics', function (Request $request) {
+
+    $data = $request->all();
+
+    $lastMetric = ServerMetric::where('name', $data['hostname'])
+        ->latest()
+        ->first();
+
+    $currentHasAlerts = !empty($data['alerts']);
+    $lastHadAlerts = $lastMetric && !empty($lastMetric->stats['alerts'] ?? []);
+
+    if ($currentHasAlerts) {
+
+        // Siempre insert
+        ServerMetric::create([
+            'name' => $data['hostname'],
+            'stats' => $data,
+        ]);
+
+    } else {
+
+        if (!$lastMetric) {
+
+            // Primer registro
+            ServerMetric::create([
+                'name' => $data['hostname'],
+                'stats' => $data,
+            ]);
+
+        } else if ($lastHadAlerts) {
+
+            // recovery (alert → fine)
+            ServerMetric::create([
+                'name' => $data['hostname'],
+                'stats' => $data,
+            ]);
+
+        } else {
+
+            // revisar el anterior
+            $previousMetric = ServerMetric::where('name', $data['hostname'])
+                ->latest()
+                ->skip(1)
+                ->first();
+
+            $previousHadAlerts = $previousMetric && !empty($previousMetric->stats['alerts'] ?? []);
+
+            if ($previousHadAlerts) {
+
+                // transición importante (fin de alerta)
+                ServerMetric::create([
+                    'name' => $data['hostname'],
+                    'stats' => $data,
+                ]);
+
+            } else {
+
+                // update normal (estado estable)
+                $lastMetric->update([
+                    'stats' => $data,
+                ]);
+            }
+        }
+    }
+
+    // evento siempre se dispara
+    event(new ServerMetricsUpdated($data));
+
+    return response()->json(['success' => true]);
+});
+
 Route::middleware('auth:sanctum')->group(function () {
 
     // Auth
@@ -41,8 +115,12 @@ Route::middleware('auth:sanctum')->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::prefix('users')->group(function () {
+        Route::get('/', [UserController::class, 'get']);
+        Route::post('/', [UserController::class, 'create']);
         Route::get('/responsibles', [UserController::class, 'getResponsibles']);
-        Route::apiResource('/', UserController::class);
+        Route::get('/{id}', [UserController::class, 'show']);
+        Route::put('/{id}', [UserController::class, 'update']);
+        Route::delete('/{id}', [UserController::class, 'delete']);
     });
 
     /*
@@ -75,6 +153,21 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [ServerDeviceController::class, 'create']);
         Route::put('/{id}', [ServerDeviceController::class, 'update']);
         Route::delete('/{id}', [ServerDeviceController::class, 'delete']);
+    });
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/servers/{server}/access-request', [ServerAccessRequestController::class, 'store']);
+    });
+
+    Route::get('/devices', function () {
+
+        return \App\Models\ServerMetric::select('name', 'stats', 'created_at')
+            ->whereIn('id', function ($query) {
+                $query->selectRaw('MAX(id)')
+                    ->from('device_metrics')
+                    ->groupBy('name');
+            })
+            ->get();
     });
 
     Route::prefix('nas-devices')->group(function () {

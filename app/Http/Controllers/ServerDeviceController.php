@@ -22,7 +22,15 @@ class ServerDeviceController extends Controller
             });
         }
 
-        $devices = $query->latest()->get();
+        // $devices = $query->latest()->get();
+        $devices = $query->latest()->get()->map(function ($device) {
+    
+            $device->serverUsers->each->makeVisibleIfAuthorized();
+            $device->serverAccess->each->makeVisibleIfAuthorized();
+
+            return $device;
+        });
+
         return response()->json([
             'count' => $devices->count(),
             'data'  => $devices
@@ -32,7 +40,11 @@ class ServerDeviceController extends Controller
     public function getById(Request $request, $id)
     {
         $device = ServerDevice::with(['status', 'deviceType', 'location', 'responsible', 'serverType', 'serverAccess', 'serverUsers', 'system'])->findOrFail($id);
+        $device->serverUsers->each->makeVisibleIfAuthorized();
+        $device->serverAccess->each->makeVisibleIfAuthorized();
+
         return response()->json($device);
+        // return response()->json($device);
     }
 
     public function create(Request $request)

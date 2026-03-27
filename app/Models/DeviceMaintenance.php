@@ -47,4 +47,37 @@ class DeviceMaintenance extends Model
     {
         return $this->belongsTo(User::class, 'responsible_id');
     }
+
+    protected static function booted()
+    {
+        static::created(function ($maintenance) {
+            $maintenance->syncLastMaintenance();
+        });
+
+        static::updated(function ($maintenance) {
+            $maintenance->syncLastMaintenance();
+        });
+
+        static::deleted(function ($maintenance) {
+            $maintenance->syncLastMaintenance();
+        });
+    }
+
+    public function syncLastMaintenance()
+    {
+        $this->loadMissing('device');
+
+        if (!$this->device) {
+            return;
+        }
+
+        $lastMaintenance = self::where('device_id', $this->device_id)
+            ->where('device_type', $this->device_type)
+            ->whereNull('deleted_at')
+            ->orderByDesc('completion_date')
+            ->first();
+
+        $this->device->last_maintenance = $lastMaintenance?->completion_date;
+        $this->device->save();
+    }
 }

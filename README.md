@@ -114,7 +114,9 @@ docker compose exec app php artisan make:model ServerDevice
 docker compose exec app php artisan make:controller ServerDeviceController --api
 
 
-
+docker exec -it api360_app php artisan config:clear
+docker exec -it api360_app php artisan cache:clear
+docker exec -it api360_app php artisan event:clear
 
 
 

@@ -18,7 +18,7 @@ class UserController extends Controller
      * * Retorna todos los usuarios que no han sido borrados lógicamente.
      * @authenticated
      */
-    public function index()
+    public function get()
     {
         return response()->json(User::all(), 200);
     }
@@ -32,13 +32,13 @@ class UserController extends Controller
      * @bodyParam level int Nivel de acceso (0:Admin, 1:Dev, 2:User). Example: 2
      * @authenticated
      */
-    public function store(Request $request)
+    public function create(Request $request)
     {
         $validated = $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'level'    => 'required|integer|between:0,2',
+            'level'    => 'required|integer|between:0,4',
         ]);
 
         $user = User::create([
@@ -61,7 +61,7 @@ class UserController extends Controller
      */
     public function getResponsibles()
     {
-        $users = User::whereIn('level', [0, 1])
+        $users = User::whereIn('level', [0, 1, 2, 3])
                      ->whereNull('deleted_at')
                      ->select('id', 'name', 'email')
                  ->get();
@@ -96,7 +96,7 @@ class UserController extends Controller
                 Rule::unique('users')->ignore($user->id)
             ],
             'password' => 'sometimes|string|min:8',
-            'level'    => 'sometimes|integer|between:0,2',
+            'level'    => 'sometimes|integer|between:0,4',
         ]);
 
         if (isset($validated['password'])) {
@@ -117,7 +117,7 @@ class UserController extends Controller
      * @urlParam id int required ID del usuario a eliminar.
      * @authenticated
      */
-    public function destroy($id)
+    public function delete($id)
     {
         $user = User::findOrFail($id);
 

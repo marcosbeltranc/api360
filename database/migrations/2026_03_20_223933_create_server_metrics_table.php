@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->tinyInteger('level')->default(2)->after('password')
-              ->comment('0:admin, 1:developer, 2:user');
+        Schema::create('device_metrics', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->jsonb('stats');
+            $table->timestamps();
             $table->softDeletes();
+
+            $table->index('name');
         });
     }
 
@@ -23,9 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-            $table->dropColumn('level');
-        });
+        Schema::dropIfExists('server_metrics');
     }
 };

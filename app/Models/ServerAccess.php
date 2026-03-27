@@ -21,6 +21,19 @@ class ServerAccess extends Model
         'deleted_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    protected $hidden = ['password'];
+
+    public function makeVisibleIfAuthorized()
+    {
+        $user = request()->user();
+
+        if ($user && in_array($user->level, [0, 2])) {
+            $this->makeVisible(['password']);
+        }
+
+        return $this;
+    }
+
     public function server()
     {
         return $this->belongsTo(ServerDevice::class, 'server_device_id');

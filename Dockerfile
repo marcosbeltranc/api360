@@ -4,9 +4,10 @@ FROM php:8.4-fpm
 RUN apt-get update && apt-get install -y \
     libpq-dev zip unzip git curl
 
-RUN docker-php-ext-install pdo pdo_pgsql
+RUN docker-php-ext-install pdo pdo_pgsql pcntl \
+    && pecl install redis \
+    && docker-php-ext-enable redis
 
-RUN docker-php-ext-install pcntl
 
 # Copiar Composer desde su imagen oficial
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
