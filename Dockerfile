@@ -1,18 +1,32 @@
 FROM php:8.4-fpm
 
-# Instalar extensiones para PostgreSQL y herramientas básicas
+# Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
-    libpq-dev zip unzip git curl
+    git \
+    curl \
+    unzip \
+    zip \
+    libpq-dev \
+    libzip-dev \
+    libonig-dev \
+    libxml2-dev \
+    && apt-get clean
 
-RUN docker-php-ext-install pdo pdo_pgsql pcntl \
-    && pecl install redis \
-    && docker-php-ext-enable redis
+# Instalar extensiones PHP necesarias para Laravel
+RUN docker-php-ext-install \
+    pdo \
+    pdo_pgsql \
+    mbstring \
+    bcmath \
+    xml \
+    pcntl \
+    zip \
+    opcache
 
-
-# Copiar Composer desde su imagen oficial
+# Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-# Permisos para que Laravel pueda escribir en storage y logs
+# Ajustar permisos (mejor hacerlo en runtime también)
 RUN chown -R www-data:www-data /var/www
