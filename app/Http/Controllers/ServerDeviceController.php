@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ServerDevice;
+use App\Models\OptionList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -47,7 +48,7 @@ class ServerDeviceController extends Controller
         // return response()->json($device);
     }
 
-    public function create(Request $request)
+    public function createOld(Request $request)
     {
         if ($request->user()->level > 1) {
             return response()->json(['message' => 'No tiene permisos para crear'], 403);
@@ -63,6 +64,38 @@ class ServerDeviceController extends Controller
         ]);
 
         $server = ServerDevice::create($request->all());
+
+        return response()->json($server->load(['status', 'deviceType', 'location', 'responsible', 'serverType', 'serverAccess', 'serverUsers', 'system']), 201);
+    }
+    public function create(Request $request)
+    {
+        if ($request->user()->level > 1) {
+            return response()->json(['message' => 'No tiene permisos para crear'], 403);
+        }
+
+        // 1. Buscamos el ID dinámicamente basado en type y slug
+        $deviceType = OptionList::where('type', 'device_type')
+                                ->where('slug', 'server')
+                                ->first();
+
+        if (!$deviceType) {
+            return response()->json(['message' => 'El tipo de dispositivo "Server" no está configurado en el sistema.'], 422);
+        }
+
+        // 2. Validamos (quitamos device_type_id de la validación requerida del request ya que lo pondremos nosotros)
+        $request->validate([
+            'name'           => 'required|string|max:255',
+            'status_id'      => 'required|exists:option_lists,id',
+            'location_id'    => 'required|exists:option_lists,id',
+            'responsible_id' => 'nullable|exists:users,id',
+            'ip_address'     => 'nullable|ip',
+        ]);
+
+        // 3. Preparamos los datos e inyectamos el ID encontrado
+        $data = $request->all();
+        $data['device_type_id'] = $deviceType->id;
+
+        $server = ServerDevice::create($data);
 
         return response()->json($server->load(['status', 'deviceType', 'location', 'responsible', 'serverType', 'serverAccess', 'serverUsers', 'system']), 201);
     }
