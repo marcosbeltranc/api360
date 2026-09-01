@@ -29,11 +29,11 @@ class ServerAccessRequestController extends Controller
             'status' => 'pending',
         ]);
 
-        Mail::to('mabc181@hotmail.com')
+        Mail::to('cesar.lopez@mepiel.com.mx')
             ->cc([
-                'alfredo.mondragonc+cc1@mepiel.com.mx',
-                'alfredo.mondragonc+cc2@mepiel.com.mx',
-                'alfredo.mondragonc+cc3@mepiel.com.mx',
+                'mario.almendarez@mepiel.com.mx',
+                'jorge.guillen@mepiel.com.mx',
+                'isai.zuniga@mepiel.com.mx',
             ])
             ->send(new ServerAccessRequestMail($accessRequest));
 

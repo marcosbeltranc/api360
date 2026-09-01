@@ -66,6 +66,7 @@ return [
             'url' => env('APP_URL') . '/storage/system_files',
             'visibility' => 'public',
         ],
+
     ],
 
     /*

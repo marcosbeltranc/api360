@@ -103,11 +103,6 @@ Route::post('/metrics', function (Request $request) {
     return response()->json(['success' => true]);
 });
 
-Route::prefix('file')->group(function () {
-    Route::get('/{id}/download', [SystemFileController::class, 'download']);
-    Route::get('/{id}/preview', [SystemFileController::class, 'preview']);
-});
-
 Route::middleware('auth:sanctum')->group(function () {
 
     // Auth
