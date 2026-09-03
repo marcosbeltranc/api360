@@ -20,6 +20,8 @@ use App\Http\Controllers\ServerAccessRequestController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\SystemFaqController;
 use App\Http\Controllers\SystemFileController;
+use App\Http\Controllers\IntegrationController;
+use App\Http\Controllers\IntegrationFileController;
 
 use App\Http\Controllers\DeviceMaintenanceController;
 
@@ -106,6 +108,11 @@ Route::post('/metrics', function (Request $request) {
 Route::prefix('file')->group(function () {
     Route::get('/{id}/download', [SystemFileController::class, 'download']);
     Route::get('/{id}/preview', [SystemFileController::class, 'preview']);
+});
+
+Route::prefix('integration-file')->group(function () {
+    Route::get('/{id}/download', [IntegrationFileController::class, 'download']);
+    Route::get('/{id}/preview', [IntegrationFileController::class, 'preview']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -230,6 +237,30 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}', [SystemFileController::class, 'update']);
         Route::delete('/{id}', [SystemFileController::class, 'delete']);
     });
+
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Integrations
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('integrations')->group(function () {
+        Route::get('/', [IntegrationController::class, 'get']);
+        Route::get('/{id}', [IntegrationController::class, 'getById']);
+        Route::post('/', [IntegrationController::class, 'create']);
+        Route::put('/{id}', [IntegrationController::class, 'update']);
+        Route::patch('/{id}/deactivate', [IntegrationController::class, 'deactivate']);
+    });
+
+    Route::prefix('integration-files')->group(function () {
+        Route::get('/', [IntegrationFileController::class, 'get']);
+        Route::post('/', [IntegrationFileController::class, 'upload']);
+        Route::get('/{id}/download', [IntegrationFileController::class, 'download']);
+        Route::get('/{id}/preview', [IntegrationFileController::class, 'preview']);
+        Route::put('/{id}', [IntegrationFileController::class, 'update']);
+        Route::delete('/{id}', [IntegrationFileController::class, 'delete']);
+    });
+
     /*
     |--------------------------------------------------------------------------
     | FAQs (Knowledge Base)
